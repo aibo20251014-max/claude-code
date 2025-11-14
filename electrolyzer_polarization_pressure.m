@@ -47,6 +47,7 @@ V_oc = zeros(size(P));
 V_act = zeros(size(P));
 V_con = zeros(size(P));
 V_ohm = zeros(size(P));
+theta_array = zeros(size(P));
 
 % 对每个压力值进行计算
 for i = 1:length(P)
@@ -92,6 +93,7 @@ for i = 1:length(P)
     deltaG_an = 41500;
     deltaG_cat = 23450;
     theta = (-97.25 + 182*T/T_ref - 84*(T/T_ref)^2)*(j/j_lim)^0.3 * P_current/(P_current - P_H2O_KOH_sat);
+    theta_array(i) = theta;  % 保存theta值
     j0_an = gamma_a*j_refa_0*exp(-deltaG_an/R*(1/T - 1/T_ref));
     j0_cat = gamma_c*j_refc_0*exp(-deltaG_cat/R*(1/T - 1/T_ref));
     alpha_a = 0.0675 + 0.00095*T;
@@ -167,11 +169,11 @@ for i = 1:length(P)
     V_ohm(i) = I*(R_m + R_e + R_el);
 end
 
-% 绘制4张图
-figure('Position', [100, 100, 1200, 900]);
+% 绘制5张图
+figure('Position', [100, 100, 1400, 900]);
 
 % 图1：压力对可逆电位的影响
-subplot(2, 2, 1);
+subplot(3, 2, 1);
 plot(P, V_oc, 'b-o', 'LineWidth', 2, 'MarkerSize', 6);
 xlabel('压力 (bar)', 'FontSize', 12);
 ylabel('可逆电位 V_{oc} (V)', 'FontSize', 12);
@@ -180,7 +182,7 @@ grid on;
 set(gca, 'FontSize', 11);
 
 % 图2：压力对活化过电位的影响
-subplot(2, 2, 2);
+subplot(3, 2, 2);
 plot(P, V_act, 'r-s', 'LineWidth', 2, 'MarkerSize', 6);
 xlabel('压力 (bar)', 'FontSize', 12);
 ylabel('活化过电位 V_{act} (V)', 'FontSize', 12);
@@ -189,7 +191,7 @@ grid on;
 set(gca, 'FontSize', 11);
 
 % 图3：压力对浓差极化过电位的影响
-subplot(2, 2, 3);
+subplot(3, 2, 3);
 plot(P, V_con, 'g-d', 'LineWidth', 2, 'MarkerSize', 6);
 xlabel('压力 (bar)', 'FontSize', 12);
 ylabel('浓差极化过电位 V_{con} (V)', 'FontSize', 12);
@@ -198,7 +200,7 @@ grid on;
 set(gca, 'FontSize', 11);
 
 % 图4：压力对欧姆过电位的影响
-subplot(2, 2, 4);
+subplot(3, 2, 4);
 plot(P, V_ohm, 'm-^', 'LineWidth', 2, 'MarkerSize', 6);
 xlabel('压力 (bar)', 'FontSize', 12);
 ylabel('欧姆过电位 V_{ohm} (V)', 'FontSize', 12);
@@ -206,8 +208,17 @@ title('压力对欧姆过电位的影响', 'FontSize', 14);
 grid on;
 set(gca, 'FontSize', 11);
 
+% 图5：压力对气泡覆盖率的影响
+subplot(3, 2, 5);
+plot(P, theta_array, 'k-p', 'LineWidth', 2, 'MarkerSize', 6);
+xlabel('压力 (bar)', 'FontSize', 12);
+ylabel('气泡覆盖率 \theta', 'FontSize', 12);
+title('压力对气泡覆盖率的影响', 'FontSize', 14);
+grid on;
+set(gca, 'FontSize', 11);
+
 % 添加总标题
-sgtitle('电流密度固定为0.35 A/cm² 时压力对各过电位的影响', 'FontSize', 16, 'FontWeight', 'bold');
+sgtitle('电流密度固定为0.35 A/cm² 时压力对各过电位和气泡覆盖率的影响', 'FontSize', 16, 'FontWeight', 'bold');
 
 % 输出一些关键数据
 fprintf('电流密度: %.2f A/cm²\n', j);
@@ -218,10 +229,12 @@ fprintf('  可逆电位: %.4f V\n', V_oc(1));
 fprintf('  活化过电位: %.4f V\n', V_act(1));
 fprintf('  浓差极化过电位: %.4f V\n', V_con(1));
 fprintf('  欧姆过电位: %.4f V\n', V_ohm(1));
+fprintf('  气泡覆盖率: %.4f\n', theta_array(1));
 fprintf('  总电压: %.4f V\n', V_oc(1)+V_act(1)+V_con(1)+V_ohm(1));
 fprintf('\n在压力为 %.0f bar 时:\n', P(end));
 fprintf('  可逆电位: %.4f V\n', V_oc(end));
 fprintf('  活化过电位: %.4f V\n', V_act(end));
 fprintf('  浓差极化过电位: %.4f V\n', V_con(end));
 fprintf('  欧姆过电位: %.4f V\n', V_ohm(end));
+fprintf('  气泡覆盖率: %.4f\n', theta_array(end));
 fprintf('  总电压: %.4f V\n', V_oc(end)+V_act(end)+V_con(end)+V_ohm(end));
