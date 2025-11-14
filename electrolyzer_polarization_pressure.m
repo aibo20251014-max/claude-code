@@ -169,7 +169,10 @@ for i = 1:length(P)
     V_ohm(i) = I*(R_m + R_e + R_el);
 end
 
-% 绘制5张图
+% 计算总电压
+V_total = V_oc + V_act + V_con + V_ohm;
+
+% 绘制6张图
 figure('Position', [100, 100, 1400, 900]);
 
 % 图1：压力对可逆电位的影响
@@ -217,8 +220,17 @@ title('压力对气泡覆盖率的影响', 'FontSize', 14);
 grid on;
 set(gca, 'FontSize', 11);
 
+% 图6：压力对总电压的影响
+subplot(3, 2, 6);
+plot(P, V_total, 'Color', [0.85 0.33 0.10], 'LineStyle', '-', 'Marker', 'h', 'LineWidth', 2.5, 'MarkerSize', 6);
+xlabel('压力 (bar)', 'FontSize', 12);
+ylabel('总电压 V_{total} (V)', 'FontSize', 12);
+title('压力对总电压的影响', 'FontSize', 14);
+grid on;
+set(gca, 'FontSize', 11);
+
 % 添加总标题
-sgtitle('电流密度固定为0.35 A/cm² 时压力对各过电位和气泡覆盖率的影响', 'FontSize', 16, 'FontWeight', 'bold');
+sgtitle('电流密度固定为0.35 A/cm² 时压力对各过电位、气泡覆盖率和总电压的影响', 'FontSize', 16, 'FontWeight', 'bold');
 
 % 输出一些关键数据
 fprintf('电流密度: %.2f A/cm²\n', j);
